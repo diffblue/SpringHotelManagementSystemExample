@@ -1,0 +1,34 @@
+# Docker image with Maven and OpenJDK 17
+image: maven:3.8.4-openjdk-17
+
+# Pipeline stages
+stages:
+  - build
+  - test
+
+# Cache Maven dependencies
+cache:
+  paths:
+    - .m2/repository
+
+# Maven configuration
+before_script:
+  - export MAVEN_OPTS="-Dmaven.repo.local=.m2/repository"
+
+# Build stage: compile and package
+build_job:
+  stage: build
+  script:
+    - mvn clean package -B
+  only:
+    - main
+    - merge_requests
+
+# Test stage: run tests
+test_job:
+  stage: test
+  script:
+    - mvn test
+  only:
+    - main
+    - merge_requests
